@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Pause and Resume All Audio in Howler.js - howler.js</title>
+    <meta name="description" content="Managing game audio effectively requires the ability to pause and resume all sounds simultaneously, such as when a player opens an in-game menu, pauses the game, or minimizes the browser tab. While Howler.js provides a global mute() method, it does not ha">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-pause-and-resume-all-audio-in-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Pause and Resume All Audio in Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-pause-and-resume-all-audio-in-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing game audio effectively requires the ability to pause and resume all sounds simultaneously, such as when a player opens an in-game menu, pauses the game, or minimizes the browser tab. While Howler.js provides a global mute() method, it does not ha" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-pause-and-resume-all-audio-in-howlerjs">How to Pause and
+Resume All Audio in Howler.js</h1>
+<p>Managing game audio effectively requires the ability to pause and
+resume all sounds simultaneously, such as when a player opens an in-game
+menu, pauses the game, or minimizes the browser tab. While Howler.js
+provides a global <code>mute()</code> method, it does not have a native,
+single-step <code>Howler.pauseAll()</code> function. This article
+outlines the two most effective ways to implement a global pause-all and
+resume-all feature using Howler.js.</p>
+<hr />
+<h2
+id="method-1-iterating-through-the-global-howls-array-recommended">Method
+1: Iterating Through the Global Howls Array (Recommended)</h2>
+<p>Howler.js maintains an internal list of all active <code>Howl</code>
+instances in an array called <code>Howler._howls</code>. You can loop
+through this array to pause and resume individual sounds.</p>
+<p>To ensure you only resume sounds that were actually playing before
+the game was paused (instead of accidentally starting sounds that were
+already stopped), you should track the playing state.</p>
+<h3 id="code-implementation">Code Implementation</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Array to keep track of sounds that were playing before the pause</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> pausedSounds <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"> * Pauses all currently playing sounds.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">pauseAllSounds</span>() {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  pausedSounds <span class="op">=</span> []<span class="op">;</span> <span class="co">// Clear any previously stored states</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  Howler<span class="op">.</span><span class="at">_howls</span><span class="op">.</span><span class="fu">forEach</span>((sound) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (sound<span class="op">.</span><span class="fu">playing</span>()) {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      sound<span class="op">.</span><span class="fu">pause</span>()<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      pausedSounds<span class="op">.</span><span class="fu">push</span>(sound)<span class="op">;</span> <span class="co">// Store the sound reference to resume later</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"> * Resumes only the sounds that were paused by pauseAllSounds.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">resumeAllSounds</span>() {</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  pausedSounds<span class="op">.</span><span class="fu">forEach</span>((sound) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  pausedSounds <span class="op">=</span> []<span class="op">;</span> <span class="co">// Reset the tracker</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="why-this-method-works-best">Why this method works best:</h3>
+<ul>
+<li><strong>Selective Resuming:</strong> It prevents paused music or
+ambient effects from playing if they were turned off by the player
+before the global pause event.</li>
+<li><strong>HTML5 Audio Support:</strong> It works seamlessly even if
+some of your audio files are using the <code>html5: true</code> fallback
+option.</li>
+</ul>
+<hr />
+<h2 id="method-2-suspending-the-web-audio-context-fastest">Method 2:
+Suspending the Web Audio Context (Fastest)</h2>
+<p>If your game relies entirely on the Web Audio API (which is Howler's
+default behavior) and does not use the HTML5 Audio fallback, you can
+pause all audio processing directly at the browser level by suspending
+the Web Audio Context.</p>
+<h3 id="code-implementation-1">Code Implementation</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"> * Pauses all game audio by suspending the Web Audio Context.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">pauseAllAudioContext</span>() {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span> <span class="op">&amp;&amp;</span> Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;running&#39;</span>) {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="fu">suspend</span>()<span class="op">.</span><span class="fu">then</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Audio playback suspended successfully.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"> * Resumes all game audio by resuming the Web Audio Context.</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">resumeAllAudioContext</span>() {</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span> <span class="op">&amp;&amp;</span> Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;suspended&#39;</span>) {</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="fu">resume</span>()<span class="op">.</span><span class="fu">then</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Audio playback resumed successfully.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="why-this-method-works-best-1">Why this method works best:</h3>
+<ul>
+<li><strong>Performance:</strong> It is incredibly lightweight,
+requiring only one line of execution to halt the entire audio
+engine.</li>
+<li><strong>Synchronicity:</strong> Because the clock of the Web Audio
+API itself is frozen, all looping sounds and scheduled audio events will
+resume precisely where they left off.</li>
+</ul>
+<p><em>Note: This method will not affect any Howler instances that
+explicitly use <code>{ html5: true }</code> in their
+configuration.</em></p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

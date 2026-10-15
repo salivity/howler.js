@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Create a Custom Howler.js Plugin - howler.js</title>
+    <meta name="description" content="This article provides a straightforward guide on how to extend the capabilities of howler.js, a popular JavaScript audio library, by creating custom Howl plugins and extensions. You will learn how to tap into the Howler prototype to add custom methods, ma">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-create-a-custom-howler-js-plugin">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Create a Custom Howler.js Plugin - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-create-a-custom-howler-js-plugin" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides a straightforward guide on how to extend the capabilities of howler.js, a popular JavaScript audio library, by creating custom Howl plugins and extensions. You will learn how to tap into the Howler prototype to add custom methods, ma" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-create-a-custom-howlerjs-plugin">How to Create a Custom
+Howler.js Plugin</h1>
+<p>This article provides a straightforward guide on how to extend the
+capabilities of howler.js, a popular JavaScript audio library, by
+creating custom Howl plugins and extensions. You will learn how to tap
+into the Howler prototype to add custom methods, manipulate audio
+states, and build reusable audio components for your web
+applications.</p>
+<h2 id="understanding-the-howlerjs-architecture">Understanding the
+Howler.js Architecture</h2>
+<p>Howler.js is built around two primary global objects:</p>
+<ul>
+<li><code>Howler</code>: The global controller that handles global
+settings like master volume, muting, and the audio context.</li>
+<li><code>Howl</code>: The constructor used to create and control
+individual audio instances or groups.</li>
+</ul>
+<p>To create a plugin or extension, you must extend the prototype of
+either <code>Howl</code> (for instance-specific methods) or
+<code>Howler</code> (for global controls) using standard JavaScript
+prototype inheritance.</p>
+<h2 id="extending-the-howl-prototype">Extending the Howl Prototype</h2>
+<p>The most common way to create a plugin is to add new methods to the
+<code>Howl.prototype</code>. This makes your custom functions available
+to every new audio instance you instantiate.</p>
+<p>Here is the standard boilerplate structure for a howler.js
+plugin:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Ensure Howler.js is loaded before executing the plugin</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> Howl <span class="op">===</span> <span class="st">&#39;undefined&#39;</span>) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&#39;Howler.js must be loaded before the custom plugin.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Extend the Howl prototype with a custom method</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  Howl<span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">myCustomMethod</span> <span class="op">=</span> <span class="kw">function</span>() {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// &#39;this&#39; refers to the active Howl instance</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> self <span class="op">=</span> <span class="kw">this</span><span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Custom logic goes here</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Playing source:&#39;</span><span class="op">,</span> self<span class="op">.</span><span class="at">_src</span>)<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Always return &#39;this&#39; to maintain method chaining compatibility</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> self<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="creating-a-practical-example-a-fade-and-stop-plugin">Creating a
+Practical Example: A Fade-and-Stop Plugin</h2>
+<p>To demonstrate how this works in practice, let's build a custom
+extension called <code>fadeAndStop</code>. This method will fade out an
+active track over a specified duration and automatically stop the
+playback once the fade is complete, resetting the volume back to its
+original state.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> Howl <span class="op">===</span> <span class="st">&#39;undefined&#39;</span>) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  Howl<span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">fadeAndStop</span> <span class="op">=</span> <span class="kw">function</span>(duration) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> self <span class="op">=</span> <span class="kw">this</span><span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> currentVolume <span class="op">=</span> self<span class="op">.</span><span class="fu">volume</span>()<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Start fading to 0</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    self<span class="op">.</span><span class="fu">fade</span>(currentVolume<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> duration)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Listen for the fade completion event</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    self<span class="op">.</span><span class="fu">once</span>(<span class="st">&#39;fade&#39;</span><span class="op">,</span> <span class="kw">function</span>() {</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      self<span class="op">.</span><span class="fu">stop</span>()<span class="op">;</span>               <span class="co">// Stop the playback</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      self<span class="op">.</span><span class="fu">volume</span>(currentVolume)<span class="op">;</span> <span class="co">// Reset volume to original state for next play</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> self<span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h3 id="how-to-use-the-custom-plugin">How to Use the Custom Plugin</h3>
+<p>Once your plugin code is loaded into your project (either in a
+separate file after howler.js or within the same bundle), you can call
+the method directly on any <code>Howl</code> instance.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Initialize a sound</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio.mp3&#39;</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Play the sound</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Use the custom extension to fade out and stop over 2000 milliseconds</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">fadeAndStop</span>(<span class="dv">2000</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="extending-the-global-howler-object">Extending the Global Howler
+Object</h2>
+<p>If you want to create helper functions that affect all sounds
+globally, you can attach your custom methods directly to the global
+<code>Howler</code> object instead of the <code>Howl</code>
+prototype.</p>
+<p>For example, this extension adds a master fade-out feature:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> Howler <span class="op">===</span> <span class="st">&#39;undefined&#39;</span>) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  Howler<span class="op">.</span><span class="at">globalFade</span> <span class="op">=</span> <span class="kw">function</span>(<span class="im">from</span><span class="op">,</span> to<span class="op">,</span> duration) {</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> currentVol <span class="op">=</span> Howler<span class="op">.</span><span class="fu">volume</span>()<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Logic to step volume down or up globally over a set duration</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Howler.volume(newVolume);</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<p>By utilizing these prototype extension patterns, you can cleanly
+organize your audio logic, keep your codebase DRY (Don't Repeat
+Yourself), and build robust audio features on top of the howler.js core
+engine.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

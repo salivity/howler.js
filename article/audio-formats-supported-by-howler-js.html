@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Formats Supported by Howler.js - howler.js</title>
+    <meta name="description" content="Howler.js is a popular JavaScript audio library designed to simplify audio playback in modern web applications. This article provides a direct and comprehensive list of the audio file formats supported by howler.js, explaining how the library handles diff">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/audio-formats-supported-by-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Audio Formats Supported by Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/audio-formats-supported-by-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Howler.js is a popular JavaScript audio library designed to simplify audio playback in modern web applications. This article provides a direct and comprehensive list of the audio file formats supported by howler.js, explaining how the library handles diff" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="audio-formats-supported-by-howlerjs">Audio Formats Supported by
+Howler.js</h1>
+<p>Howler.js is a popular JavaScript audio library designed to simplify
+audio playback in modern web applications. This article provides a
+direct and comprehensive list of the audio file formats supported by
+howler.js, explaining how the library handles different codecs and
+browser compatibility to ensure a seamless user experience.</p>
+<h3 id="supported-audio-formats">Supported Audio Formats</h3>
+<p>Howler.js leverages the browser's native capabilities, using both the
+Web Audio API and HTML5 Audio. Because of this, it supports a wide
+variety of audio formats. The standard formats supported by howler.js
+include:</p>
+<ul>
+<li><strong>MP3 (<code>mp3</code>):</strong> The most universally
+supported audio format across all browsers and platforms.</li>
+<li><strong>MPEG-4 / AAC (<code>m4a</code>, <code>mp4</code>,
+<code>aac</code>):</strong> Highly efficient formats offering high
+quality at lower bitrates, native to Apple devices and widely supported
+elsewhere.</li>
+<li><strong>Ogg Vorbis (<code>ogg</code>, <code>oga</code>):</strong> An
+open-source, patent-free format popular for web use and widely supported
+by Chrome, Firefox, and Opera.</li>
+<li><strong>WebM (<code>webm</code>):</strong> A modern media container
+format that typically uses the Opus or Vorbis audio codecs, highly
+optimized for the web.</li>
+<li><strong>WAV (<code>wav</code>):</strong> An uncompressed format that
+provides high-fidelity audio, though it results in significantly larger
+file sizes.</li>
+<li><strong>FLAC (<code>flac</code>):</strong> A popular lossless
+compression format supported by most modern desktop and mobile
+browsers.</li>
+<li><strong>CAF (<code>caf</code>):</strong> Apple's Core Audio Format,
+which is highly useful for iOS and macOS applications.</li>
+<li><strong>Dolby Digital (<code>ac3</code>, <code>ec3</code>):</strong>
+Advanced multi-channel audio formats supported on devices and browsers
+that have the necessary hardware decoding capabilities.</li>
+</ul>
+<h3 id="how-howlerjs-manages-formats-and-browser-compatibility">How
+Howler.js Manages Formats and Browser Compatibility</h3>
+<p>Different web browsers support different audio codecs. To solve this
+issue, howler.js allows developers to define multiple source files for a
+single sound object.</p>
+<p>When instantiating a sound, you can pass an array of file paths with
+different extensions:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio.webm&#39;</span><span class="op">,</span> <span class="st">&#39;audio.mp3&#39;</span>]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Howler.js will automatically detect the capabilities of the user's
+browser, identify the first format in the list that the browser can
+natively play, and load only that specific file. This prevents
+unnecessary bandwidth usage and guarantees that the audio will play
+regardless of whether the user is on Safari, Chrome, Firefox, or an
+older mobile browser.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

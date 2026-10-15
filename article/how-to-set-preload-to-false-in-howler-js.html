@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Set Preload to False in Howler.js - howler.js</title>
+    <meta name="description" content="Setting the preload property to false in Howler.js is an effective way to optimize web application performance by preventing audio files from downloading automatically. This guide demonstrates how to disable automatic preloading during the initialization">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-set-preload-to-false-in-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Set Preload to False in Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-set-preload-to-false-in-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Setting the preload property to false in Howler.js is an effective way to optimize web application performance by preventing audio files from downloading automatically. This guide demonstrates how to disable automatic preloading during the initialization" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-set-preload-to-false-in-howlerjs">How to Set Preload to
+False in Howler.js</h1>
+<p>Setting the <code>preload</code> property to <code>false</code> in
+Howler.js is an effective way to optimize web application performance by
+preventing audio files from downloading automatically. This guide
+demonstrates how to disable automatic preloading during the
+initialization of a <code>Howl</code> object and explains how to
+manually trigger the audio load when it is actually needed.</p>
+<p>By default, Howler.js has its <code>preload</code> property set to
+<code>true</code> (or <code>'metadata'</code>), which means it
+immediately starts downloading audio files as soon as a new
+<code>Howl</code> instance is created. To prevent this behavior and save
+user bandwidth, you must explicitly set the <code>preload</code> option
+to <code>false</code> in your configuration object.</p>
+<h3 id="code-example">Code Example</h3>
+<p>Here is the standard syntax for initializing a Howler.js instance
+with preloading disabled:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">preload</span><span class="op">:</span> <span class="kw">false</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>With this configuration, the browser will not download the audio file
+(<code>audio.mp3</code>) when the script executes or when the page
+loads.</p>
+<h3 id="loading-the-audio-manually">Loading the Audio Manually</h3>
+<p>Because the audio is not preloaded, attempting to play the sound
+immediately using <code>sound.play()</code> may result in a delay while
+the file fetches. To load the audio file at a later time—such as when a
+user hovers over a button, clicks an interface element, or navigates to
+a specific section of your site—you must call the <code>.load()</code>
+method:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Trigger the download manually</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">load</span>()<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Play the sound once it has finished loading</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">once</span>(<span class="st">&#39;load&#39;</span><span class="op">,</span> <span class="kw">function</span>(){</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Using <code>preload: false</code> is highly recommended for
+soundboards, games with numerous audio assets, or any application where
+users may not interact with every available audio file. This practice
+improves initial page load speeds and reduces mobile data consumption
+for your users.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

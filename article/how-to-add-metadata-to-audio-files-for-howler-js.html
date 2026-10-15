@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Add Metadata to Audio Files for Howler.js - howler.js</title>
+    <meta name="description" content="This article explains how to add and read metadata in sound files for use with the Howler.js audio library. Since Howler.js does not natively parse embedded audio tags like ID3, you will learn the most effective workarounds: attaching custom metadata dire">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-add-metadata-to-audio-files-for-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Add Metadata to Audio Files for Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-add-metadata-to-audio-files-for-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how to add and read metadata in sound files for use with the Howler.js audio library. Since Howler.js does not natively parse embedded audio tags like ID3, you will learn the most effective workarounds: attaching custom metadata dire" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-add-metadata-to-audio-files-for-howlerjs">How to Add
+Metadata to Audio Files for Howler.js</h1>
+<p>This article explains how to add and read metadata in sound files for
+use with the Howler.js audio library. Since Howler.js does not natively
+parse embedded audio tags like ID3, you will learn the most effective
+workarounds: attaching custom metadata directly to your Howler objects,
+using external JavaScript parsers for embedded file tags, and utilizing
+audio sprites for timing-based metadata.</p>
+<h3
+id="method-1-attaching-custom-metadata-directly-to-howler-objects">Method
+1: Attaching Custom Metadata Directly to Howler Objects</h3>
+<p>The most efficient way to use metadata with Howler.js is to define it
+directly within the configuration object when instantiating a new
+<code>Howl</code> player. Because JavaScript allows you to append custom
+properties to objects, you can store track information directly
+alongside the audio source.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;track.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">html5</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Custom metadata object</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">metadata</span><span class="op">:</span> {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">title</span><span class="op">:</span> <span class="st">&#39;Symphony No. 5&#39;</span><span class="op">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">artist</span><span class="op">:</span> <span class="st">&#39;Ludwig van Beethoven&#39;</span><span class="op">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">album</span><span class="op">:</span> <span class="st">&#39;Classic Masterpieces&#39;</span><span class="op">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">genre</span><span class="op">:</span> <span class="st">&#39;Classical&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Accessing the metadata in your application</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Now playing: </span><span class="sc">${</span>sound<span class="op">.</span><span class="at">_navigator</span> <span class="op">?</span> sound<span class="op">.</span><span class="at">metadata</span><span class="op">.</span><span class="at">title</span> <span class="op">:</span> sound<span class="op">.</span><span class="at">metadata</span><span class="op">.</span><span class="at">title</span><span class="sc">}</span><span class="vs"> by </span><span class="sc">${</span>sound<span class="op">.</span><span class="at">metadata</span><span class="op">.</span><span class="at">artist</span><span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span></code></pre></div>
+<p>This method avoids the overhead of parsing binary audio files on the
+client side, making it ideal for web applications with a known database
+of audio tracks.</p>
+<h3
+id="method-2-reading-embedded-id3-tags-with-an-external-parser">Method
+2: Reading Embedded ID3 Tags with an External Parser</h3>
+<p>If your application allows users to upload their own audio files, you
+must read the metadata embedded directly inside the file container (such
+as MP3 ID3 tags). Since Howler.js only handles audio decoding and
+playback, you need a secondary library like <code>jsmediatags</code> to
+read the metadata.</p>
+<ol type="1">
+<li><strong>Tag your files:</strong> Use a desktop tool like Mp3tag or
+Audacity to embed title, artist, and cover art metadata into your audio
+files.</li>
+<li><strong>Parse and play:</strong> Use the parser to extract the
+metadata, then pass the file URL to Howler.js.</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example using jsmediatags to read a local or remote file</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>jsmediatags<span class="op">.</span><span class="fu">read</span>(<span class="st">&quot;path/to/audio.mp3&quot;</span><span class="op">,</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onSuccess</span><span class="op">:</span> <span class="kw">function</span>(tag) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> tags <span class="op">=</span> tag<span class="op">.</span><span class="at">tags</span><span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Initialize Howler.js with the audio source</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;path/to/audio.mp3&#39;</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Use the parsed metadata in your UI</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Title: </span><span class="sc">${</span>tags<span class="op">.</span><span class="at">title</span><span class="sc">}</span><span class="vs">, Artist: </span><span class="sc">${</span>tags<span class="op">.</span><span class="at">artist</span><span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onError</span><span class="op">:</span> <span class="kw">function</span>(error) {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Error reading tags: &#39;</span><span class="op">,</span> error<span class="op">.</span><span class="at">type</span><span class="op">,</span> error<span class="op">.</span><span class="at">info</span>)<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="method-3-using-audio-sprites-for-timing-metadata">Method 3:
+Using Audio Sprites for Timing Metadata</h3>
+<p>If your metadata consists of specific segment markers, chapters, or
+sound effects within a single audio file, you can define this data using
+Howler's native <code>sprite</code> property. Sprites serve as timing
+metadata, allowing you to map specific keys to timestamps (start time
+and duration in milliseconds).</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> soundSprite <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;sounds.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">sprite</span><span class="op">:</span> {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">laser</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1000</span>]<span class="op">,</span>      <span class="co">// Starts at 0s, lasts 1s</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">explosion</span><span class="op">:</span> [<span class="dv">1500</span><span class="op">,</span> <span class="dv">3000</span>]<span class="op">,</span> <span class="co">// Starts at 1.5s, lasts 3s</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">background</span><span class="op">:</span> [<span class="dv">5000</span><span class="op">,</span> <span class="dv">20000</span><span class="op">,</span> <span class="kw">true</span>] <span class="co">// Starts at 5s, lasts 20s, loops</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Play a specific metadata segment</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>soundSprite<span class="op">.</span><span class="fu">play</span>(<span class="st">&#39;laser&#39;</span>)<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

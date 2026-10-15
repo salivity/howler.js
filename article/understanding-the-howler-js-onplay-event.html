@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding the Howler.js onplay Event - howler.js</title>
+    <meta name="description" content="This article explains the purpose, functionality, and practical use cases of the onplay event in the howler.js JavaScript audio library. You will learn how this event handler works, how to implement it in your code, and how it helps synchronize your appli">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/understanding-the-howler-js-onplay-event">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Understanding the Howler.js onplay Event - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/understanding-the-howler-js-onplay-event" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the purpose, functionality, and practical use cases of the onplay event in the howler.js JavaScript audio library. You will learn how this event handler works, how to implement it in your code, and how it helps synchronize your appli" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="understanding-the-howlerjs-onplay-event">Understanding the
+Howler.js onplay Event</h1>
+<p>This article explains the purpose, functionality, and practical use
+cases of the <code>onplay</code> event in the howler.js JavaScript audio
+library. You will learn how this event handler works, how to implement
+it in your code, and how it helps synchronize your application's user
+interface with audio playback.</p>
+<p>The <code>onplay</code> event in howler.js is a callback function
+that fires immediately when an audio source begins playing. It is a
+crucial tool for developers who need to trigger specific actions the
+exact moment sound output starts.</p>
+<h3 id="common-use-cases-for-onplay">Common Use Cases for onplay</h3>
+<p>In interactive web applications, the <code>onplay</code> event is
+primarily used to keep the visual state of the application in sync with
+the audio. Common implementations include:</p>
+<ul>
+<li><strong>Toggle Play/Pause Buttons:</strong> When a user clicks play,
+the <code>onplay</code> event can be used to visually change the play
+icon to a pause icon, ensuring the UI accurately reflects the audio
+state.</li>
+<li><strong>Initiating Animations:</strong> If your application features
+audio visualizers, character animations, or pulsing graphics, the
+<code>onplay</code> event serves as the perfect trigger to start these
+animations.</li>
+<li><strong>Starting Progress Bars:</strong> You can use this event to
+initiate a timer or interval that updates a progress bar as the audio
+file plays.</li>
+<li><strong>Analytics and Tracking:</strong> If you need to log user
+engagement, the <code>onplay</code> event can send data to your
+analytics platform to record exactly when a user started listening to a
+track.</li>
+</ul>
+<h3 id="how-to-implement-the-onplay-event">How to Implement the onplay
+Event</h3>
+<p>You can define the <code>onplay</code> event handler either when
+initializing a new <code>Howl</code> object or by binding it dynamically
+to an existing sound instance.</p>
+<h4 id="method-1-definition-during-initialization">Method 1: Definition
+During Initialization</h4>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onplay</span><span class="op">:</span> <span class="kw">function</span>(soundId) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Audio has started playing! Sound ID:&#39;</span><span class="op">,</span> soundId)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Add your UI update logic here</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span></code></pre></div>
+<h4 id="method-2-dynamic-binding-using-the-on-method">Method 2: Dynamic
+Binding Using the <code>.on()</code> Method</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio.mp3&#39;</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Bind the play event dynamically</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;play&#39;</span><span class="op">,</span> <span class="kw">function</span>(soundId) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Playback started for sound ID:&#39;</span><span class="op">,</span> soundId)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span></code></pre></div>
+<h3 id="the-sound-id-parameter">The Sound ID Parameter</h3>
+<p>As shown in the examples, the <code>onplay</code> callback
+automatically receives a <code>soundId</code> parameter. Howler.js
+assigns a unique ID to every audio playback instance. This parameter is
+highly useful when playing multiple sounds simultaneously, as it allows
+you to identify and manipulate the specific audio instance that just
+started playing.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Howler.js once Method: Guide to Single-Use Events - howler.js</title>
+    <meta name="description" content="In this article, you will learn how the once method works for event listening in the Howler.js JavaScript audio library. We will cover its core functionality, syntax, practical use cases, and how it differs from the standard on method to help you efficien">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/howler-js-once-method-guide-to-single-use-events">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Howler.js once Method: Guide to Single-Use Events - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/howler-js-once-method-guide-to-single-use-events" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="In this article, you will learn how the once method works for event listening in the Howler.js JavaScript audio library. We will cover its core functionality, syntax, practical use cases, and how it differs from the standard on method to help you efficien" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="howlerjs-once-method-guide-to-single-use-events">Howler.js once
+Method: Guide to Single-Use Events</h1>
+<p>In this article, you will learn how the <code>once</code> method
+works for event listening in the Howler.js JavaScript audio library. We
+will cover its core functionality, syntax, practical use cases, and how
+it differs from the standard <code>on</code> method to help you
+efficiently manage audio playback events in your web applications.</p>
+<h2 id="what-is-the-once-method">What is the once Method?</h2>
+<p>In Howler.js, the <code>once</code> method is used to listen for a
+specific audio event and execute a callback function exactly one time.
+Once the event is triggered and the callback runs, the event listener is
+automatically removed. This prevents the callback from firing again on
+subsequent occurrences of the same event.</p>
+<h2 id="syntax">Syntax</h2>
+<p>The syntax for the <code>once</code> method is straightforward:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">once</span>(<span class="bu">event</span><span class="op">,</span> callback<span class="op">,</span> [id])<span class="op">;</span></span></code></pre></div>
+<ul>
+<li><strong><code>event</code></strong> (String): The name of the event
+to listen for (e.g., <code>'load'</code>, <code>'play'</code>,
+<code>'end'</code>, <code>'volume'</code>, <code>'mute'</code>).</li>
+<li><strong><code>callback</code></strong> (Function): The function to
+execute when the event is fired.</li>
+<li><strong><code>id</code></strong> (Number, optional): The specific
+sound ID to listen to. If omitted, the listener applies to all instances
+of the <code>Howl</code> object.</li>
+</ul>
+<h2 id="how-it-works-code-example">How it Works: Code Example</h2>
+<p>Consider a scenario where you want to execute a function only the
+first time a sound finishes playing.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { Howl } <span class="im">from</span> <span class="st">&#39;howler&#39;</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;track.mp3&#39;</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Setup the single-use listener</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">once</span>(<span class="st">&#39;end&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;The audio has finished playing for the first time.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Play the sound</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span> </span></code></pre></div>
+<p>When <code>sound.play()</code> is called, the audio plays to the end.
+The <code>'end'</code> event fires, triggering the callback, which logs
+the message to the console. If you call <code>sound.play()</code> a
+second time, the audio will play again, but nothing will be logged to
+the console because the listener was automatically destroyed after the
+first run.</p>
+<h2 id="once-vs-on">once vs. on</h2>
+<p>While both methods are used for event handling in Howler.js, they
+serve different lifecycle purposes:</p>
+<ul>
+<li><strong><code>on</code></strong>: Keeps the event listener active
+indefinitely. The callback function will run every single time the event
+occurs until it is manually removed using the <code>off</code>
+method.</li>
+<li><strong><code>once</code></strong>: Automatically cleans itself up.
+It removes the listener immediately after the callback executes, making
+it ideal for setup routines or transitional events.</li>
+</ul>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<p>The <code>once</code> method is highly useful in the following
+scenarios:</p>
+<ol type="1">
+<li><strong>Handling Asset Loading</strong>: Triggering a UI transition
+or starting a game loop as soon as the audio file has loaded
+(<code>'load'</code> event).</li>
+<li><strong>Initial Play Actions</strong>: Unmuting audio or updating a
+button state the very first time a user interacts with the audio
+controller.</li>
+<li><strong>Chaining Sequences</strong>: Setting up a subsequent audio
+track to play only after the current introductory track ends for the
+first time.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

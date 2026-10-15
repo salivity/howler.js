@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Does the html5 Property Do in Howler.js - howler.js</title>
+    <meta name="description" content="This article explains the purpose, benefits, and trade-offs of the html5 property in howler.js. When initializing a Howl object, toggling this property determines whether the library uses the advanced Web Audio API or falls back to standard HTML5 Audio st">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/what-does-the-html-5-property-do-in-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Does the html5 Property Do in Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/what-does-the-html-5-property-do-in-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the purpose, benefits, and trade-offs of the html5 property in howler.js. When initializing a Howl object, toggling this property determines whether the library uses the advanced Web Audio API or falls back to standard HTML5 Audio st" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-does-the-html5-property-do-in-howlerjs">What Does the html5
+Property Do in Howler.js</h1>
+<p>This article explains the purpose, benefits, and trade-offs of the
+<code>html5</code> property in howler.js. When initializing a
+<code>Howl</code> object, toggling this property determines whether the
+library uses the advanced Web Audio API or falls back to standard HTML5
+Audio streaming.</p>
+<p>By default, howler.js plays audio using the <strong>Web Audio
+API</strong>. This method downloads the entire audio file and decodes it
+into memory (RAM) before playing. While this is ideal for short sound
+effects due to low latency and precise timing, it is highly inefficient
+for larger audio files.</p>
+<p>Setting <code>html5: true</code> forces howler.js to bypass the Web
+Audio API and use the standard HTML5 <code>&lt;audio&gt;</code> element
+instead.</p>
+<h2 id="key-benefits-of-enabling-html5-true">Key Benefits of Enabling
+html5: true</h2>
+<h3 id="1-audio-streaming">1. Audio Streaming</h3>
+<p>When <code>html5</code> is set to <code>true</code>, the browser
+streams the audio file in chunks rather than downloading the entire file
+at once. This allows the audio to start playing almost instantly, even
+if it is a large file.</p>
+<h3 id="2-reduced-memory-usage">2. Reduced Memory Usage</h3>
+<p>Because the file is streamed and not fully decoded into memory, it
+drastically reduces the RAM footprint of your application. This is
+crucial for preventing browser crashes, especially on mobile
+devices.</p>
+<h3 id="3-support-for-large-files">3. Support for Large Files</h3>
+<p>You should always set <code>html5: true</code> for long-form audio
+content such as:</p>
+<ul>
+<li>Background music tracks</li>
+<li>Podcasts</li>
+<li>Long voiceover narration</li>
+</ul>
+<hr />
+<h2 id="code-example">Code Example</h2>
+<p>Here is how to initialize a <code>Howl</code> instance with the
+<code>html5</code> property enabled:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> backgroundMusic <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio/background-track.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">html5</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="co">// Forces HTML5 Audio streaming</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">loop</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">volume</span><span class="op">:</span> <span class="fl">0.5</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>backgroundMusic<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span></code></pre></div>
+<hr />
+<h2 id="trade-offs-and-limitations">Trade-offs and Limitations</h2>
+<p>While the <code>html5</code> property is necessary for large files,
+it comes with specific limitations:</p>
+<ul>
+<li><strong>No Web Audio Effects:</strong> You cannot use advanced audio
+manipulation features such as spatial audio (3D panning), filters, or
+real-time frequency analysis.</li>
+<li><strong>Higher Latency:</strong> There is a slight delay (latency)
+between triggering the play command and the sound actually starting.
+This makes it unsuitable for rapid-fire sound effects in games.</li>
+<li><strong>Limited Simultaneous Playback:</strong> On some mobile
+browsers, you cannot play multiple HTML5 audio streams at the exact same
+time.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

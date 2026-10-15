@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Handle Audio File Corruption in Howler.js - howler.js</title>
+    <meta name="description" content="When developing web applications that rely on audio, encountering corrupted, malformed, or missing audio files can disrupt the user experience. This article explains how to detect, handle, and gracefully recover from audio file corruption errors when usin">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-handle-audio-file-corruption-in-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Handle Audio File Corruption in Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-handle-audio-file-corruption-in-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When developing web applications that rely on audio, encountering corrupted, malformed, or missing audio files can disrupt the user experience. This article explains how to detect, handle, and gracefully recover from audio file corruption errors when usin" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-handle-audio-file-corruption-in-howlerjs">How to Handle
+Audio File Corruption in Howler.js</h1>
+<p>When developing web applications that rely on audio, encountering
+corrupted, malformed, or missing audio files can disrupt the user
+experience. This article explains how to detect, handle, and gracefully
+recover from audio file corruption errors when using the howler.js
+library. You will learn how to use built-in error event listeners,
+interpret error details, and implement fallback strategies to keep your
+application running smoothly.</p>
+<h2 id="detecting-load-errors-with-onloaderror">Detecting Load Errors
+with <code>onloaderror</code></h2>
+<p>Howler.js provides a built-in event handler called
+<code>onloaderror</code> specifically designed to catch issues when an
+audio file fails to load or decode. If an audio file is corrupted, the
+browser's underlying Web Audio API or HTML5 Audio element will fail to
+decode it, triggering this callback.</p>
+<p>You can define the <code>onloaderror</code> callback directly in the
+<code>Howl</code> configuration object:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio-file.mp3&#39;</span><span class="op">,</span> <span class="st">&#39;audio-file.webm&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onloaderror</span><span class="op">:</span> <span class="kw">function</span>(soundId<span class="op">,</span> error) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="vs">`Failed to load sound </span><span class="sc">${</span>soundId<span class="sc">}</span><span class="vs">:`</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">handleAudioError</span>(soundId<span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>The callback receives two parameters:</p>
+<ol type="1">
+<li><code>soundId</code>: The unique ID of the sound instance.</li>
+<li><code>error</code>: The error message or error code returned by the
+system (such as a decoding error code <code>3</code> or <code>4</code>
+from HTML5 Audio).</li>
+</ol>
+<h2 id="understanding-error-types">Understanding Error Types</h2>
+<p>When an audio file is corrupted, the browser's audio decoder
+typically returns specific error codes. In HTML5 Audio, these are
+represented as:</p>
+<ul>
+<li><strong>MEDIA_ERR_DECODE (Code 3):</strong> An error occurred while
+decoding the media resource. This is the most common indicator of a
+corrupted or unsupported file format.</li>
+<li><strong>MEDIA_ERR_SRC_NOT_SUPPORTED (Code 4):</strong> The media
+resource could not be loaded, either because the server returned a 404
+error, or the browser does not support the format.</li>
+</ul>
+<p>In Howler.js, the <code>error</code> parameter in the
+<code>onloaderror</code> callback will often return these codes or a
+text string explaining that decoding failed.</p>
+<h2 id="implementing-a-fallback-strategy">Implementing a Fallback
+Strategy</h2>
+<p>Once a corruption error is detected, you should prevent the
+application from freezing by implementing a fallback mechanism. There
+are three common ways to handle this:</p>
+<h3 id="1-try-an-alternative-audio-format">1. Try an Alternative Audio
+Format</h3>
+<p>Always provide multiple formats in the <code>src</code> array. If the
+primary format (e.g., MP3) is corrupted during export, Howler.js can
+automatically attempt to load the next format (e.g., WebM or OGG) if
+specified.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// If the browser fails to decode the MP3, it may fallback to WebM</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio-file.mp3&#39;</span><span class="op">,</span> <span class="st">&#39;audio-file.webm&#39;</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="2-load-a-default-silence-or-placeholder-file">2. Load a Default
+"Silence" or Placeholder File</h3>
+<p>If the critical audio asset is corrupted, you can catch the error and
+attempt to load a generic, lightweight placeholder file to prevent your
+application's audio sequence from breaking.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleAudioError</span>(soundId<span class="op">,</span> error) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&quot;Attempting to load fallback silent audio due to corruption.&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> fallbackSound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;silent-placeholder.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">autoplay</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-notify-the-user-and-disable-audio-controls">3. Notify the User
+and Disable Audio Controls</h3>
+<p>If the audio is non-essential, the best approach is to disable the
+play buttons and inform the user that the audio file is currently
+unavailable. This prevents users from clicking non-functional UI
+elements.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;corrupted-file.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onloaderror</span><span class="op">:</span> <span class="kw">function</span>(id<span class="op">,</span> err) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&#39;play-button&#39;</span>)<span class="op">.</span><span class="at">disabled</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&#39;status-message&#39;</span>)<span class="op">.</span><span class="at">innerText</span> <span class="op">=</span> <span class="st">&quot;Audio playback unavailable.&quot;</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

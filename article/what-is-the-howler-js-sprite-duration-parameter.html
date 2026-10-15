@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the Howler.js Sprite Duration Parameter? - howler.js</title>
+    <meta name="description" content="This article explains the purpose and functionality of the sprite duration parameter in howler.js, a popular JavaScript audio library. It covers how this parameter defines the playback length of specific audio segments, how it is configured within an audi">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/what-is-the-howler-js-sprite-duration-parameter">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the Howler.js Sprite Duration Parameter? - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/what-is-the-howler-js-sprite-duration-parameter" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains the purpose and functionality of the sprite duration parameter in howler.js, a popular JavaScript audio library. It covers how this parameter defines the playback length of specific audio segments, how it is configured within an audi" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-howlerjs-sprite-duration-parameter">What Is the
+Howler.js Sprite Duration Parameter?</h1>
+<p>This article explains the purpose and functionality of the sprite
+duration parameter in howler.js, a popular JavaScript audio library. It
+covers how this parameter defines the playback length of specific audio
+segments, how it is configured within an audio sprite array, and why it
+is essential for managing web audio efficiently.</p>
+<p>In howler.js, an audio sprite is a way to bridge multiple audio
+clips—such as sound effects or music tracks—into a single audio file.
+This technique significantly improves performance by reducing the number
+of HTTP requests required to load game or application sounds. When
+defining a sprite, you pass an array of values, and the duration
+parameter is the second value in that array, measured in
+milliseconds.</p>
+<p>The syntax for defining a sprite in howler.js looks like this:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;soundsheet.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">sprite</span><span class="op">:</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">blast</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1500</span>]<span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">laser</span><span class="op">:</span> [<span class="dv">2000</span><span class="op">,</span> <span class="dv">500</span>]<span class="op">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">winner</span><span class="op">:</span> [<span class="dv">3000</span><span class="op">,</span> <span class="dv">2500</span><span class="op">,</span> <span class="kw">true</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>In the example above, the sprite definition array follows the format
+<code>[offset, duration, loop]</code>.</p>
+<h3 id="the-core-purpose-of-sprite-duration">The Core Purpose of Sprite
+Duration</h3>
+<p>The primary purpose of the sprite duration parameter is to tell the
+browser's audio engine exactly when to stop playing the audio stream
+after it has started.</p>
+<ol type="1">
+<li><strong>Precise Playback Control:</strong> It establishes the exact
+length of the audio segment. For instance, the <code>laser</code> sprite
+starts at an offset of 2000 milliseconds (2 seconds) into the audio file
+and plays for a duration of exactly 500 milliseconds (0.5 seconds)
+before automatically pausing.</li>
+<li><strong>Preventing Audio Bleeding:</strong> Without an explicit
+duration, the audio player would continue playing the rest of the audio
+file, causing subsequent sound effects in the sprite sheet to bleed into
+the current playback.</li>
+<li><strong>Looping Calculations:</strong> If the optional third
+parameter (<code>loop</code>) is set to <code>true</code>, howler.js
+uses the duration parameter to calculate when to wrap the playback back
+to the starting offset, enabling seamless loops of specific segments
+within a larger file.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

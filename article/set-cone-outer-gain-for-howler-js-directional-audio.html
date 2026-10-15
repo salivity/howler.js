@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set coneOuterGain for Howler.js Directional Audio - howler.js</title>
+    <meta name="description" content="This article provides a straightforward guide on how to configure the coneOuterGain property for spatialized, directional audio sources in howler.js. You will learn how to use the Howler.js spatial audio API to control the volume of a sound outside its di">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/set-cone-outer-gain-for-howler-js-directional-audio">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Set coneOuterGain for Howler.js Directional Audio - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/set-cone-outer-gain-for-howler-js-directional-audio" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides a straightforward guide on how to configure the coneOuterGain property for spatialized, directional audio sources in howler.js. You will learn how to use the Howler.js spatial audio API to control the volume of a sound outside its di" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="set-coneoutergain-for-howlerjs-directional-audio">Set
+coneOuterGain for Howler.js Directional Audio</h1>
+<p>This article provides a straightforward guide on how to configure the
+<code>coneOuterGain</code> property for spatialized, directional audio
+sources in howler.js. You will learn how to use the Howler.js spatial
+audio API to control the volume of a sound outside its directional cone,
+allowing you to create realistic 3D soundscapes in your web
+applications.</p>
+<p>To set the <code>coneOuterGain</code> of a directional audio source
+in Howler.js, you must use the <code>pannerAttr</code> method on your
+<code>Howl</code> instance. This method configures the underlying Web
+Audio API <code>PannerNode</code> properties, which control how sound
+behaves in 3D space.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>For spatial audio to work in Howler.js:</p>
+<ol type="1">
+<li>You must use the spatial plugin (included in the default
+<code>howler.js</code> or <code>howler.spatial.js</code> build).</li>
+<li>The <code>html5</code> property of the <code>Howl</code> instance
+must be set to <code>false</code> (Web Audio API is required for spatial
+effects).</li>
+</ol>
+<hr />
+<h3 id="step-by-step-implementation">Step-by-Step Implementation</h3>
+<h4 id="1-initialize-the-howl-instance">1. Initialize the Howl
+Instance</h4>
+<p>Define your sound source and ensure Web Audio is enabled by setting
+<code>html5: false</code>.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;soundtrack.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">html5</span><span class="op">:</span> <span class="kw">false</span> <span class="co">// Required for spatial/3D audio</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h4 id="2-play-the-sound-and-get-the-sound-id">2. Play the Sound and Get
+the Sound ID</h4>
+<p>Spatial properties are applied to specific playback instances using
+their unique sound ID.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> soundId <span class="op">=</span> sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span></code></pre></div>
+<h4 id="3-define-position-and-orientation">3. Define Position and
+Orientation</h4>
+<p>For directional cones to work, the sound source must have both a
+position in 3D space and an orientation vector pointing in a specific
+direction.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Position the sound at the center of the 3D space (X, Y, Z)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">pos</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> soundId)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Point the sound source forward along the Z-axis (X, Y, Z)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">orientation</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> soundId)<span class="op">;</span></span></code></pre></div>
+<h4 id="4-configure-pannerattr-with-coneoutergain">4. Configure
+<code>pannerAttr</code> with <code>coneOuterGain</code></h4>
+<p>Use the <code>pannerAttr</code> method to set
+<code>coneOuterGain</code> alongside <code>coneInnerAngle</code> and
+<code>coneOuterAngle</code>.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">pannerAttr</span>({</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">coneInnerAngle</span><span class="op">:</span> <span class="dv">90</span><span class="op">,</span>   <span class="co">// No attenuation occurs inside this angle (in degrees)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">coneOuterAngle</span><span class="op">:</span> <span class="dv">180</span><span class="op">,</span>  <span class="co">// Attenuation begins transitioning outside this angle</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">coneOuterGain</span><span class="op">:</span> <span class="fl">0.1</span>    <span class="co">// The volume level (0.0 to 1.0) outside the outer cone</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> soundId)<span class="op">;</span></span></code></pre></div>
+<hr />
+<h3 id="understanding-the-properties">Understanding the Properties</h3>
+<ul>
+<li><strong><code>coneInnerAngle</code></strong>: A 3D cone, in degrees,
+inside of which there is no volume attenuation.</li>
+<li><strong><code>coneOuterAngle</code></strong>: A 3D cone, in degrees,
+outside of which the volume is attenuated by a constant factor defined
+by <code>coneOuterGain</code>.</li>
+<li><strong><code>coneOuterGain</code></strong>: A value between
+<code>0.0</code> (complete silence) and <code>1.0</code> (no
+attenuation). This value determines the volume level of the audio when
+the listener is completely outside the <code>coneOuterAngle</code>.
+Setting this to <code>0.1</code> means the sound drops to 10% volume
+when you stand behind the directional source.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

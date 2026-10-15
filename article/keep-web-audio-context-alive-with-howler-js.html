@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keep Web Audio Context Alive with Howler.js - howler.js</title>
+    <meta name="description" content="Modern web browsers automatically suspend the Web Audio API context to save system resources and prevent unwanted background noise. This article explains how to use the Howler.js library to implement a silent &quot;heartbeat&quot; audio loop, ensuring your web appl">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/keep-web-audio-context-alive-with-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Keep Web Audio Context Alive with Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/keep-web-audio-context-alive-with-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern web browsers automatically suspend the Web Audio API context to save system resources and prevent unwanted background noise. This article explains how to use the Howler.js library to implement a silent &quot;heartbeat&quot; audio loop, ensuring your web appl" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="keep-web-audio-context-alive-with-howlerjs">Keep Web Audio
+Context Alive with Howler.js</h1>
+<p>Modern web browsers automatically suspend the Web Audio API context
+to save system resources and prevent unwanted background noise. This
+article explains how to use the Howler.js library to implement a silent
+"heartbeat" audio loop, ensuring your web application's audio context
+remains continuously active and ready to play sounds instantly without
+being paused by browser autoplay policies.</p>
+<h3 id="the-problem-audio-context-suspension">The Problem: Audio Context
+Suspension</h3>
+<p>Browsers like Chrome, Safari, and Firefox require user interaction
+(like a click or tap) to start playing audio. If your application does
+not play audio for a certain period, or if the user switches tabs, the
+browser may automatically suspend the underlying
+<code>AudioContext</code>. When you try to play a sound later, there can
+be a noticeable delay, or the sound may not play at all.</p>
+<h3 id="the-solution-a-silent-heartbeat">The Solution: A Silent
+Heartbeat</h3>
+<p>To prevent the browser from suspending the audio state, you can play
+a short, silent sound file on a continuous loop or at regular intervals.
+This tricks the browser's audio engine into registering ongoing audio
+activity, keeping the context in a "running" state.</p>
+<p>Using <strong>Howler.js</strong>, this can be achieved efficiently
+using a base64-encoded silent WAV file. This eliminates the need to host
+an external audio file.</p>
+<h3 id="step-by-step-implementation">Step-by-Step Implementation</h3>
+<h4 id="1-define-the-silent-audio-base64-string">1. Define the Silent
+Audio Base64 String</h4>
+<p>Instead of loading an external <code>.mp3</code> or <code>.wav</code>
+file, you can use a tiny base64 data URI of a silent audio track. This
+ensures the asset loads instantly and offline.</p>
+<h4 id="2-initialize-the-howler-instance">2. Initialize the Howler
+Instance</h4>
+<p>Set up a <code>Howl</code> object with the silent source, looping
+enabled, and the volume set to a very low level (or zero).</p>
+<h4 id="3-trigger-on-first-user-interaction">3. Trigger on First User
+Interaction</h4>
+<p>Because browsers restrict audio playback until a user gesture occurs,
+you must start the heartbeat during a click or touch event. Once
+started, the loop runs in the background.</p>
+<h3 id="complete-code-example">Complete Code Example</h3>
+<p>Here is the complete JavaScript code to implement the silent
+heartbeat:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// A tiny, 1-second silent WAV file encoded in Base64</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> SILENT_WAV <span class="op">=</span> <span class="st">&#39;data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAAAAAA==&#39;</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> heartbeat <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">startAudioHeartbeat</span>() {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (heartbeat) <span class="cf">return</span><span class="op">;</span> <span class="co">// Prevent multiple instances</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Initialize the silent player</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  heartbeat <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">src</span><span class="op">:</span> [SILENT_WAV]<span class="op">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">format</span><span class="op">:</span> [<span class="st">&#39;wav&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">loop</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">volume</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span> <span class="co">// Low volume to avoid any potential digital artifacts</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">html5</span><span class="op">:</span> <span class="kw">false</span>  <span class="co">// Force Web Audio API to keep the context alive</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Play the silence</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  heartbeat<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">// Start the heartbeat on the first user interaction</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">initAudio</span>() {</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">startAudioHeartbeat</span>()<span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Clean up event listeners once activated</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="bu">document</span><span class="op">.</span><span class="fu">removeEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="bu">document</span><span class="op">.</span><span class="fu">removeEventListener</span>(<span class="st">&#39;keydown&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="bu">document</span><span class="op">.</span><span class="fu">removeEventListener</span>(<span class="st">&#39;touchstart&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">// Add listeners for initial user interaction</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;keydown&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;touchstart&#39;</span><span class="op">,</span> initAudio)<span class="op">;</span></span></code></pre></div>
+<h3 id="why-this-works">Why This Works</h3>
+<ul>
+<li><strong>Web Audio API Force:</strong> Setting
+<code>html5: false</code> forces Howler.js to use the Web Audio API
+instead of the HTML5 <code>&lt;audio&gt;</code> element. Keeping the Web
+Audio API active is what keeps the application's overall sound engine
+alive.</li>
+<li><strong>Low Volume vs. Zero Volume:</strong> Some browsers optimize
+performance by suspending audio nodes that have a volume of absolute
+<code>0</code>. Setting the volume to a negligible level like
+<code>0.01</code> ensures the browser keeps processing the audio stream
+while remaining completely inaudible to the user.</li>
+<li><strong>Looping:</strong> Setting <code>loop: true</code> ensures
+the audio context receives a continuous stream of data, preventing it
+from timing out and entering the "suspended" state.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

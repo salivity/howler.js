@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitch Shift Without Changing Speed in Howler.js - howler.js</title>
+    <meta name="description" content="This article explains whether it is possible to adjust the pitch of an audio file without changing its playback speed using the Howler.js library. It covers the technical limitations of Howler.js regarding pitch manipulation and provides alternative solut">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/pitch-shift-without-changing-speed-in-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pitch Shift Without Changing Speed in Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/pitch-shift-without-changing-speed-in-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains whether it is possible to adjust the pitch of an audio file without changing its playback speed using the Howler.js library. It covers the technical limitations of Howler.js regarding pitch manipulation and provides alternative solut" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="pitch-shift-without-changing-speed-in-howlerjs">Pitch Shift
+Without Changing Speed in Howler.js</h1>
+<p>This article explains whether it is possible to adjust the pitch of
+an audio file without changing its playback speed using the Howler.js
+library. It covers the technical limitations of Howler.js regarding
+pitch manipulation and provides alternative solutions for developers
+looking to achieve independent pitch shifting in web applications.</p>
+<h2 id="the-short-answer-no">The Short Answer: No</h2>
+<p>By default, <strong>Howler.js does not support adjusting the pitch of
+a sound without also changing its playback speed.</strong></p>
+<p>Howler.js is designed to be a lightweight wrapper for the Web Audio
+API. To alter the pitch of a sound, Howler.js provides the
+<code>rate()</code> method. However, this method changes the playback
+rate of the audio buffer. Increasing the playback rate makes the audio
+play faster and sound higher-pitched, while decreasing it makes the
+audio play slower and sound lower-pitched. This behavior is identical to
+speeding up or slowing down a vinyl record.</p>
+<h2 id="why-howlerjs-cannot-do-this">Why Howler.js Cannot Do This</h2>
+<p>To change pitch without affecting speed (known as pitch shifting), or
+to change speed without affecting pitch (known as time stretching), you
+need complex Digital Signal Processing (DSP) algorithms, such as a Phase
+Vocoder.</p>
+<p>Because Howler.js focuses on simple playback control, spatial audio,
+and cross-browser compatibility, it does not include these heavy DSP
+algorithms in its codebase. This keeps the library lightweight and
+fast.</p>
+<h2 id="alternative-solutions">Alternative Solutions</h2>
+<p>If your project requires independent control over pitch and speed,
+you will need to look beyond standard Howler.js.</p>
+<h3 id="1-use-tonejs">1. Use Tone.js</h3>
+<p>Tone.js is a web audio framework designed for creating interactive
+music in the browser. Unlike Howler.js, Tone.js has built-in effects
+nodes for advanced audio manipulation. You can use the
+<code>Tone.PitchShift</code> node to alter the pitch of an audio source
+in semitones without affecting its playback duration.</p>
+<h3 id="2-implement-web-audio-api-audioworklets">2. Implement Web Audio
+API AudioWorklets</h3>
+<p>If you want to keep using Howler.js for general playback but need
+custom pitch-shifting, you can route Howler's audio output through a
+custom Web Audio API node. By using an <code>AudioWorklet</code>, you
+can write or import a JavaScript-based pitch-shifting algorithm to
+process the audio buffer in real-time.</p>
+<h3 id="3-pre-render-the-audio-files">3. Pre-render the Audio Files</h3>
+<p>If the pitch adjustments do not need to happen dynamically in
+real-time, the most performance-efficient solution is to pre-render the
+audio files at different pitches using desktop audio editing software
+and load the specific file your application needs.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

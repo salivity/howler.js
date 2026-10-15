@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Howler.js Audio Latency Issues - howler.js</title>
+    <meta name="description" content="Audio latency in howler.js can disrupt the user experience, particularly in interactive applications like games or soundboards where instant feedback is critical. This article provides a direct guide on how to identify the root causes of delay in howler.j">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/fix-howler-js-audio-latency-issues">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fix Howler.js Audio Latency Issues - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/fix-howler-js-audio-latency-issues" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Audio latency in howler.js can disrupt the user experience, particularly in interactive applications like games or soundboards where instant feedback is critical. This article provides a direct guide on how to identify the root causes of delay in howler.j" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="fix-howlerjs-audio-latency-issues">Fix Howler.js Audio Latency
+Issues</h1>
+<p>Audio latency in howler.js can disrupt the user experience,
+particularly in interactive applications like games or soundboards where
+instant feedback is critical. This article provides a direct guide on
+how to identify the root causes of delay in howler.js and implements
+practical solutions to achieve near-zero audio latency. You will learn
+how to optimize audio formats, properly configure the Web Audio API,
+unlock browsers' audio contexts, and preload assets effectively.</p>
+<h3 id="force-web-audio-api-instead-of-html5-audio">Force Web Audio API
+Instead of HTML5 Audio</h3>
+<p>Howler.js uses the Web Audio API by default, which offers
+high-precision, low-latency playback. However, it falls back to HTML5
+Audio for large files or when explicitly configured to do so. HTML5
+Audio (<code>html5: true</code>) is prone to significant latency.</p>
+<p>For short sound effects that require instant playback, ensure
+<code>html5</code> is set to <code>false</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;sound.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">html5</span><span class="op">:</span> <span class="kw">false</span> <span class="co">// Forces the use of Web Audio API</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Keep HTML5 Audio enabled only for long background music tracks where
+a slight delay in starting is acceptable and saving memory is a
+priority.</p>
+<h3 id="preload-audio-files">Preload Audio Files</h3>
+<p>Playing an audio file before it is fully loaded and decoded by the
+browser causes a noticeable delay. Always preload your critical audio
+assets and trigger them only after they are ready.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;laser.webm&#39;</span><span class="op">,</span> <span class="st">&#39;laser.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">preload</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Play only after the file has loaded</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>sound<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;load&#39;</span><span class="op">,</span> <span class="kw">function</span>(){</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  sound<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="optimize-audio-file-formats-and-sizes">Optimize Audio File
+Formats and Sizes</h3>
+<p>Large file sizes and complex codecs increase the time it takes for
+the browser to decode audio into memory.</p>
+<ul>
+<li><strong>Use WebM:</strong> WebM is highly compressed and decodes
+quickly in modern browsers. Always provide a <code>.webm</code> file as
+your primary source, with <code>.mp3</code> as a fallback.</li>
+<li><strong>Reduce Sample Rates:</strong> Downsample your audio files to
+44.1 kHz or 22.05 kHz, and convert stereo tracks to mono where spatial
+audio is not required.</li>
+<li><strong>Keep Files Short:</strong> Trim any silence from the
+beginning of your audio files using an audio editor before
+exporting.</li>
+</ul>
+<h3 id="use-audio-sprites">Use Audio Sprites</h3>
+<p>Instead of loading dozens of individual small audio files—which
+triggers multiple HTTP requests and decoding cycles—combine your sound
+effects into a single audio sprite. Howler.js can then load this single
+file once and instantly play specific segments.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sprite <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;soundsprite.webm&#39;</span><span class="op">,</span> <span class="st">&#39;soundsprite.mp3&#39;</span>]<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">sprite</span><span class="op">:</span> {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">blast</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1000</span>]<span class="op">,</span> <span class="co">// [start time in ms, duration in ms]</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">laser</span><span class="op">:</span> [<span class="dv">1500</span><span class="op">,</span> <span class="dv">500</span>]<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">winner</span><span class="op">:</span> [<span class="dv">3000</span><span class="op">,</span> <span class="dv">2000</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Instant playback from the preloaded sprite</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>sprite<span class="op">.</span><span class="fu">play</span>(<span class="st">&#39;laser&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="resume-the-audiocontext-on-user-gesture">Resume the AudioContext
+on User Gesture</h3>
+<p>Modern web browsers prevent audio from playing automatically to
+protect users from unwanted noise. They put the
+<code>AudioContext</code> into a suspended state until a user
+interaction (like a click or tap) occurs. If howler.js attempts to play
+sound while the context is suspended, it may result in lag once the
+context finally resumes.</p>
+<p>While howler.js attempts to unlock this automatically, you can
+manually resume the global audio context on the first user interaction
+to guarantee instant initialization:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span> <span class="op">&amp;&amp;</span> Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;suspended&#39;</span>) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="fu">resume</span>()<span class="op">.</span><span class="fu">then</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;AudioContext resumed successfully&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

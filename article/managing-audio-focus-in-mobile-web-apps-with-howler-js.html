@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managing Audio Focus in Mobile Web Apps with Howler.js - howler.js</title>
+    <meta name="description" content="Managing audio playback on mobile browsers requires careful handling of audio focus to ensure your web app behaves politely alongside other media apps and system notifications. This article provides a straightforward guide on how to handle audio focus, re">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/managing-audio-focus-in-mobile-web-apps-with-howler-js">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Managing Audio Focus in Mobile Web Apps with Howler.js - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/managing-audio-focus-in-mobile-web-apps-with-howler-js" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing audio playback on mobile browsers requires careful handling of audio focus to ensure your web app behaves politely alongside other media apps and system notifications. This article provides a straightforward guide on how to handle audio focus, re" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="managing-audio-focus-in-mobile-web-apps-with-howlerjs">Managing
+Audio Focus in Mobile Web Apps with Howler.js</h1>
+<p>Managing audio playback on mobile browsers requires careful handling
+of audio focus to ensure your web app behaves politely alongside other
+media apps and system notifications. This article provides a
+straightforward guide on how to handle audio focus, respond to user
+interruptions (such as incoming calls), and manage system-level playback
+states in a mobile web application using the Howler.js library.</p>
+<h2 id="understanding-mobile-audio-focus">Understanding Mobile Audio
+Focus</h2>
+<p>Unlike desktop environments, mobile operating systems (iOS and
+Android) enforce strict rules on audio playback. Only one application
+can hold primary audio focus at a time. If a user receives a phone call,
+plays a video in another app, or locks their device, your mobile web app
+will lose audio focus. To prevent a poor user experience, your app must
+automatically pause or mute its audio and cleanly resume when focus is
+restored.</p>
+<h2 id="handling-app-backgrounding-with-the-visibility-api">Handling App
+Backgrounding with the Visibility API</h2>
+<p>The most reliable way to detect when a user minimizes your web app,
+switches tabs, or locks their device is by using the browser's Page
+Visibility API. When the page becomes hidden, you should mute or pause
+Howler.js.</p>
+<p>Howler.js provides a global <code>Howler.mute()</code> method which
+is ideal for this scenario because it preserves the playback state of
+all active sounds without stopping them.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;visibilitychange&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">document</span><span class="op">.</span><span class="at">hidden</span>) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Mute all sounds globally when the app goes to the background</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="fu">mute</span>(<span class="kw">true</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Unmute all sounds when the user returns to the app</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="fu">mute</span>(<span class="kw">false</span>)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>If you prefer to pause the audio entirely instead of muting, you can
+call <code>Howler.stop()</code> or loop through your active Howl
+instances to pause them manually.</p>
+<h2 id="handling-audio-context-interruptions">Handling Audio Context
+Interruptions</h2>
+<p>Mobile browsers manage audio through the Web Audio API's
+<code>AudioContext</code>. If a phone call occurs or another app takes
+exclusive audio focus, the browser will automatically suspend the
+underlying <code>AudioContext</code> used by Howler.js.</p>
+<p>You can listen to state changes on Howler's global Web Audio context
+(<code>Howler.ctx</code>) to respond to these system-level
+interruptions.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;statechange&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;interrupted&#39;</span> <span class="op">||</span> Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;suspended&#39;</span>) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="co">// Handle the audio interruption (e.g., pause game loop or UI state)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Audio focus lost. Context suspended.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;running&#39;</span>) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="co">// Audio focus has been restored</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Audio focus regained. Context running.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="resuming-audio-on-user-interaction">Resuming Audio on User
+Interaction</h2>
+<p>Mobile browsers require a user interaction (like a click or tap) to
+initiate or resume audio playback after an interruption. If the browser
+suspends the audio context, Howler.js might not be able to resume
+playback automatically without user consent.</p>
+<p>To handle this, you should display a "Resume" or "Play" button in
+your UI when the audio context is suspended. Once the user taps the
+button, call <code>Howler.ctx.resume()</code> to manually re-enable the
+audio context.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> resumeButton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&#39;resume-btn&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>resumeButton<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (Howler<span class="op">.</span><span class="at">ctx</span> <span class="op">&amp;&amp;</span> Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="at">state</span> <span class="op">===</span> <span class="st">&#39;suspended&#39;</span>) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="at">ctx</span><span class="op">.</span><span class="fu">resume</span>()<span class="op">.</span><span class="fu">then</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;AudioContext resumed successfully.&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

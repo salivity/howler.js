@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Howler.js Default Audio Extension Priority - howler.js</title>
+    <meta name="description" content="This article explains how howler.js resolves audio file formats, how it determines which audio extension to play first, and the recommended file extension order you should use in your code for optimal browser compatibility and performance. Howler.js does">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/howler-js-default-audio-extension-priority">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Howler.js Default Audio Extension Priority - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/howler-js-default-audio-extension-priority" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how howler.js resolves audio file formats, how it determines which audio extension to play first, and the recommended file extension order you should use in your code for optimal browser compatibility and performance. Howler.js does" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="howlerjs-default-audio-extension-priority">Howler.js Default
+Audio Extension Priority</h1>
+<p>This article explains how howler.js resolves audio file formats, how
+it determines which audio extension to play first, and the recommended
+file extension order you should use in your code for optimal browser
+compatibility and performance.</p>
+<h2 id="how-howlerjs-resolves-audio-formats">How Howler.js Resolves
+Audio Formats</h2>
+<p>Howler.js does not have a strict, hardcoded default audio extension
+priority. Instead, <strong>priority is determined by the order of the
+sources you define in the <code>src</code> array</strong> in your Howl
+configuration.</p>
+<p>When you load a sound, Howler.js loops through your list of audio
+sources from first to last. It checks each file extension against the
+browser's capabilities using its internal codec support checker
+(<code>Howler._codecs</code>). It will immediately load and play the
+<strong>first</strong> format in your list that the current browser
+supports.</p>
+<h3 id="recommended-audio-extension-order">Recommended Audio Extension
+Order</h3>
+<p>Because Howler.js respects the order of your <code>src</code> array,
+you must order your audio files strategically. To get the best balance
+of fast loading times, high quality, and universal browser
+compatibility, you should list your audio sources in the following
+order:</p>
+<ol type="1">
+<li><strong>WebM (<code>.webm</code> / <code>.weba</code>)</strong>:
+This should always be listed first. It offers superior compression and
+high quality, making it ideal for fast web loading. It is supported by
+almost all modern browsers.</li>
+<li><strong>Ogg (<code>.ogg</code>)</strong>: Use this as a secondary
+modern format, particularly for older browsers that support Ogg Vorbis
+but not WebM.</li>
+<li><strong>MP3 (<code>.mp3</code>)</strong>: This is the universal
+fallback. While it has licensing limitations and larger file sizes than
+WebM, virtually every browser and device can play MP3 files.</li>
+<li><strong>WAV (<code>.wav</code>)</strong>: This should be your last
+resort. WAV files are uncompressed and very large, but they are
+universally supported.</li>
+</ol>
+<h3 id="code-example">Code Example</h3>
+<p>Here is how you should structure your Howler.js instance to implement
+the recommended format priority:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> sound <span class="op">=</span> <span class="kw">new</span> <span class="fu">Howl</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;audio/track.webm&#39;</span><span class="op">,</span> <span class="st">&#39;audio/track.mp3&#39;</span><span class="op">,</span> <span class="st">&#39;audio/track.wav&#39;</span>]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>In this setup, Howler.js will first try to play the WebM version. If
+the browser is older and does not support WebM, Howler.js will skip to
+the MP3 version. If both fail, it will fall back to the WAV file.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

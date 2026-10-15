@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Reset All Howler.js Instances - howler.js</title>
+    <meta name="description" content="This article provides a quick guide on how to reset the state of all Howler.js audio instances simultaneously. You will learn how to stop all active playbacks, mute global audio, and completely unload all instances from memory using the global Howler API.">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/how-to-reset-all-howler-js-instances">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Reset All Howler.js Instances - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/how-to-reset-all-howler-js-instances" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides a quick guide on how to reset the state of all Howler.js audio instances simultaneously. You will learn how to stop all active playbacks, mute global audio, and completely unload all instances from memory using the global Howler API." />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-reset-all-howlerjs-instances">How to Reset All Howler.js
+Instances</h1>
+<p>This article provides a quick guide on how to reset the state of all
+Howler.js audio instances simultaneously. You will learn how to stop all
+active playbacks, mute global audio, and completely unload all instances
+from memory using the global Howler API.</p>
+<p>To reset or clear the state of all active audio instances in
+Howler.js, you do not need to keep track of every individual
+<code>Howl</code> object. Instead, you can use the global
+<code>Howler</code> object (with a capital "H"), which controls the
+global audio context and all active sound instances.</p>
+<h3 id="stop-all-audio-playback">Stop All Audio Playback</h3>
+<p>If you want to immediately stop all currently playing audio across
+all instances without destroying them, use the <code>stop()</code>
+method on the global object:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Howler<span class="op">.</span><span class="fu">stop</span>()<span class="op">;</span></span></code></pre></div>
+<p>This stops all active sounds and resets their playback position back
+to the beginning.</p>
+<h3 id="unload-all-instances-full-reset">Unload All Instances (Full
+Reset)</h3>
+<p>To perform a complete reset—which stops all playback, clears the
+audio cache, and destroys all active <code>Howl</code> instances to free
+up system memory—use the <code>unload()</code> method:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Howler<span class="op">.</span><span class="fu">unload</span>()<span class="op">;</span></span></code></pre></div>
+<p>After calling <code>Howler.unload()</code>, any previously created
+<code>Howl</code> objects will no longer function, and you will need to
+re-create them if you want to play those sounds again. This is the
+recommended method when unloading a level in a game, navigating away
+from a page, or performing a hard reset of your application's audio
+state.</p>
+<h3 id="reset-global-volume-and-mute-states">Reset Global Volume and
+Mute States</h3>
+<p>If you also need to reset the global volume and mute settings to
+their default values alongside stopping the audio, you can apply these
+global commands:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Stop all active playbacks</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Howler<span class="op">.</span><span class="fu">stop</span>()<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Reset global volume to default (1.0)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Howler<span class="op">.</span><span class="fu">volume</span>(<span class="fl">1.0</span>)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Ensure the global mute state is disabled</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>Howler<span class="op">.</span><span class="fu">mute</span>(<span class="kw">false</span>)<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

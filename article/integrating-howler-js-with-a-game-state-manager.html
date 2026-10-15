@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrating Howler.js with a Game State Manager - howler.js</title>
+    <meta name="description" content="Integrating Howler.js with a global game state manager ensures that your game&#39;s audio stays perfectly synchronized with gameplay events, UI states, and user preferences. By linking Howler.js to a centralized state store, you can dynamically trigger sound">
+    <link rel="canonical" href="https://salivity.github.io/howler.js/article/integrating-howler-js-with-a-game-state-manager">
+    <link rel="search" type="application/opensearchdescription+xml" title="howler.js" href="/howler.js/opensearch.xml">
+    <link rel="icon" href="/howler.js/favicon.ico">
+    <link rel="stylesheet" href="/howler.js/css/style.css">
+    <link media="print" rel="stylesheet" href="/howler.js/css/print.css">
+    <script src="/howler.js/js/fuse.min.js"></script>
+    <script src="/howler.js/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Integrating Howler.js with a Game State Manager - howler.js" />
+    <meta property="og:url" content="https://salivity.github.io/howler.js/article/integrating-howler-js-with-a-game-state-manager" />
+    <meta property="og:image" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/howler.js/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Integrating Howler.js with a global game state manager ensures that your game&#39;s audio stays perfectly synchronized with gameplay events, UI states, and user preferences. By linking Howler.js to a centralized state store, you can dynamically trigger sound" />
+    <link rel="manifest" href="/howler.js/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/howler.js/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>howler.js</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/howler.js/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="integrating-howlerjs-with-a-game-state-manager">Integrating
+Howler.js with a Game State Manager</h1>
+<p>Integrating Howler.js with a global game state manager ensures that
+your game's audio stays perfectly synchronized with gameplay events, UI
+states, and user preferences. By linking Howler.js to a centralized
+state store, you can dynamically trigger sound effects, fade background
+music during scene transitions, and globally manage volume or mute
+settings. This guide explains how to architect a clean, decoupled
+connection between your audio engine and your game's state.</p>
+<h2 id="the-architecture-decoupled-state-and-audio">The Architecture:
+Decoupled State and Audio</h2>
+<p>To keep your codebase maintainable, avoid calling Howler.js methods
+directly from your gameplay components. Instead, design a system where
+your gameplay components modify a centralized <strong>Game State
+Manager</strong> (such as Redux, Zustand, or a custom Event Emitter),
+and an <strong>Audio Manager</strong> listens to those state changes to
+trigger the appropriate sounds.</p>
+<pre><code>[ Gameplay Action ] ---&gt; [ State Manager ] ---&gt; [ Audio Manager ] ---&gt; [ Howler.js ]</code></pre>
+<p>This decoupled approach ensures that your audio logic is isolated,
+making it easier to debug, test, and scale.</p>
+<h2 id="step-1-define-the-audio-state">Step 1: Define the Audio
+State</h2>
+<p>Your global state manager needs to track settings that affect audio
+globally, as well as contextual state changes that trigger specific
+sounds. Define a state structure that includes:</p>
+<ul>
+<li><strong>masterVolume</strong>: A float between <code>0.0</code> and
+<code>1.0</code>.</li>
+<li><strong>isMuted</strong>: A boolean indicating if the game is
+muted.</li>
+<li><strong>currentScene</strong>: A string representing the active game
+screen (e.g., <code>'menu'</code>, <code>'playing'</code>,
+<code>'gameover'</code>).</li>
+<li><strong>sfxTrigger</strong>: An object or string representing the
+last triggered sound effect.</li>
+</ul>
+<h2 id="step-2-create-the-audio-manager">Step 2: Create the Audio
+Manager</h2>
+<p>The Audio Manager is a singleton class or service that instantiates
+your Howl objects and exposes methods to control them. It holds
+references to your audio files and manages playback states.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { Howl<span class="op">,</span> Howler } <span class="im">from</span> <span class="st">&#39;howler&#39;</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AudioManager {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">constructor</span>() {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">music</span> <span class="op">=</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">menu</span><span class="op">:</span> <span class="kw">new</span> <span class="fu">Howl</span>({ <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;/audio/menu-theme.mp3&#39;</span>]<span class="op">,</span> <span class="dt">loop</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">gameplay</span><span class="op">:</span> <span class="kw">new</span> <span class="fu">Howl</span>({ <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;/audio/gameplay-theme.mp3&#39;</span>]<span class="op">,</span> <span class="dt">loop</span><span class="op">:</span> <span class="kw">true</span> })</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">sfx</span> <span class="op">=</span> {</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">click</span><span class="op">:</span> <span class="kw">new</span> <span class="fu">Howl</span>({ <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;/audio/click.wav&#39;</span>] })<span class="op">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">explosion</span><span class="op">:</span> <span class="kw">new</span> <span class="fu">Howl</span>({ <span class="dt">src</span><span class="op">:</span> [<span class="st">&#39;/audio/explosion.wav&#39;</span>] })</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span> <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">playMusic</span>(key) {</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span>) {</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">.</span><span class="fu">fade</span>(<span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">.</span><span class="fu">volume</span>()<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1000</span>)<span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> prevMusic <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="pp">setTimeout</span>(() <span class="kw">=&gt;</span> prevMusic<span class="op">.</span><span class="fu">stop</span>()<span class="op">,</span> <span class="dv">1000</span>)<span class="op">;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">music</span>[key]<span class="op">;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span>) {</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">.</span><span class="fu">volume</span>(<span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">currentMusic</span><span class="op">.</span><span class="fu">fade</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1000</span>)<span class="op">;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">playSFX</span>(key) {</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">sfx</span>[key]) {</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">sfx</span>[key]<span class="op">.</span><span class="fu">play</span>()<span class="op">;</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setVolume</span>(volume) {</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="fu">volume</span>(volume)<span class="op">;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setMute</span>(isMuted) {</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    Howler<span class="op">.</span><span class="fu">mute</span>(isMuted)<span class="op">;</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> audioManager <span class="op">=</span> <span class="kw">new</span> <span class="fu">AudioManager</span>()<span class="op">;</span></span></code></pre></div>
+<h2 id="step-3-subscribe-state-changes-to-the-audio-manager">Step 3:
+Subscribe State Changes to the Audio Manager</h2>
+<p>To make the integration functional, subscribe your
+<code>audioManager</code> to changes in your global state.</p>
+<p>Below is an example of how to connect the <code>audioManager</code>
+to a state manager (using a generic subscription pattern applicable to
+Zustand, Redux, or custom stores):</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { stateStore } <span class="im">from</span> <span class="st">&#39;./stateStore&#39;</span><span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { audioManager } <span class="im">from</span> <span class="st">&#39;./AudioManager&#39;</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Track the previous state to detect specific changes</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> previousState <span class="op">=</span> stateStore<span class="op">.</span><span class="fu">getState</span>()<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>stateStore<span class="op">.</span><span class="fu">subscribe</span>((state) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// 1. Handle Volume and Mute changes</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (state<span class="op">.</span><span class="at">masterVolume</span> <span class="op">!==</span> previousState<span class="op">.</span><span class="at">masterVolume</span>) {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    audioManager<span class="op">.</span><span class="fu">setVolume</span>(state<span class="op">.</span><span class="at">masterVolume</span>)<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (state<span class="op">.</span><span class="at">isMuted</span> <span class="op">!==</span> previousState<span class="op">.</span><span class="at">isMuted</span>) {</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    audioManager<span class="op">.</span><span class="fu">setMute</span>(state<span class="op">.</span><span class="at">isMuted</span>)<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// 2. Handle Scene Transitions (Music changes)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (state<span class="op">.</span><span class="at">currentScene</span> <span class="op">!==</span> previousState<span class="op">.</span><span class="at">currentScene</span>) {</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (state<span class="op">.</span><span class="at">currentScene</span> <span class="op">===</span> <span class="st">&#39;menu&#39;</span>) {</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>      audioManager<span class="op">.</span><span class="fu">playMusic</span>(<span class="st">&#39;menu&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (state<span class="op">.</span><span class="at">currentScene</span> <span class="op">===</span> <span class="st">&#39;playing&#39;</span>) {</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      audioManager<span class="op">.</span><span class="fu">playMusic</span>(<span class="st">&#39;gameplay&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">// 3. Handle Sound Effects</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (state<span class="op">.</span><span class="at">lastSfxTrigger</span> <span class="op">!==</span> previousState<span class="op">.</span><span class="at">lastSfxTrigger</span> <span class="op">&amp;&amp;</span> state<span class="op">.</span><span class="at">lastSfxTrigger</span>) {</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    audioManager<span class="op">.</span><span class="fu">playSFX</span>(state<span class="op">.</span><span class="at">lastSfxTrigger</span>)<span class="op">;</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Update previous state reference</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  previousState <span class="op">=</span> state<span class="op">;</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="step-4-triggering-audio-via-gameplay-states">Step 4: Triggering
+Audio via Gameplay States</h2>
+<p>Now, your gameplay components only need to dispatch state changes.
+They do not need to import Howler.js or manage audio assets
+directly.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Player clicks a button in a UI component</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleStartGame</span>() {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Trigger a UI sound effect via state</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  stateStore<span class="op">.</span><span class="fu">dispatch</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;TRIGGER_SFX&#39;</span><span class="op">,</span> <span class="dt">payload</span><span class="op">:</span> <span class="st">&#39;click&#39;</span> })<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Transition the scene, which automatically fades the music</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  stateStore<span class="op">.</span><span class="fu">dispatch</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;SET_SCENE&#39;</span><span class="op">,</span> <span class="dt">payload</span><span class="op">:</span> <span class="st">&#39;playing&#39;</span> })<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This clean separation of concerns ensures that state changes act as
+the single source of truth for both your visual rendering and your audio
+playback.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/howler.js'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            utterancesScript.setAttribute('theme', currentTheme === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="https://smvc.dev/contact">Contact</a></li>
+                <li><a href="/howler.js/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/howler.js/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
